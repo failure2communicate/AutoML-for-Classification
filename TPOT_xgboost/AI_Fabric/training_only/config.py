@@ -24,69 +24,13 @@ import numpy as np
 
 classifier_config_dict = {
 
-    # Classifiers
-    'sklearn.naive_bayes.GaussianNB': {
-    },
-
-    'sklearn.naive_bayes.BernoulliNB': {
-        'alpha': [1e-3, 1e-2, 1e-1, 1., 10., 100.],
-        'fit_prior': [True, False]
-    },
-
-    'sklearn.naive_bayes.MultinomialNB': {
-        'alpha': [1e-3, 1e-2, 1e-1, 1., 10., 100.],
-        'fit_prior': [True, False]
-    },
-
-    'sklearn.ensemble.ExtraTreesClassifier': {
-        'n_estimators': [100],
-        'criterion': ["gini", "entropy"],
-        'max_features': np.arange(0.05, 1.01, 0.05),
-        'min_samples_split': range(2, 21),
-        'min_samples_leaf': range(1, 21),
-        'bootstrap': [True, False]
-    },
-
-    'sklearn.ensemble.GradientBoostingClassifier': {
-        'n_estimators': [100],
-        'learning_rate': [1e-3, 1e-2, 1e-1, 0.5, 1.],
+    'xgboost.XGBClassifier': {
+        'n_estimators': [100, 150, 200],
         'max_depth': range(1, 11),
-        'min_samples_split': range(2, 21),
-        'min_samples_leaf': range(1, 21),
-        'subsample': np.arange(0.05, 1.01, 0.05),
-        'max_features': np.arange(0.05, 1.01, 0.05)
-    },
-
-    'sklearn.neighbors.KNeighborsClassifier': {
-        'n_neighbors': range(1, 101),
-        'weights': ["uniform", "distance"],
-        'p': [1, 2]
-    },
-
-    'sklearn.svm.LinearSVC': {
-        'penalty': ["l1", "l2"],
-        'loss': ["hinge", "squared_hinge"],
-        'dual': [True, False],
-        'tol': [1e-5, 1e-4, 1e-3, 1e-2, 1e-1],
-        'C': [1e-4, 1e-3, 1e-2, 1e-1, 0.5, 1., 5., 10., 15., 20., 25.]
-    },
-
-    'sklearn.linear_model.LogisticRegression': {
-        'max_iter': [100000],
-        'penalty': ["l1", "l2"],
-        'C': [1e-4, 1e-3, 1e-2, 1e-1, 0.5, 1., 5., 10., 15., 20., 25.],
-        'dual': [True, False]
-    },
-
-    'sklearn.linear_model.SGDClassifier': {
-        'loss': ['log', 'hinge', 'modified_huber', 'squared_hinge', 'perceptron'],
-        'penalty': ['elasticnet'],
-        'alpha': [0.0, 0.01, 0.001],
-        'learning_rate': ['invscaling', 'constant'],
-        'fit_intercept': [True, False],
-        'l1_ratio': [0.25, 0.0, 1.0, 0.75, 0.5],
-        'eta0': [0.1, 1.0, 0.01],
-        'power_t': [0.5, 0.0, 1.0, 0.1, 100.0, 10.0, 50.0]
+        'learning_rate': [1e-3, 1e-2, 1e-1, 0.5, 1.],
+        'subsample': np.arange(0.05, 0.95, 0.05),
+        'min_child_weight': range(1, 21),
+        'nthread': [1]
     },
 
     # Preprocesssors

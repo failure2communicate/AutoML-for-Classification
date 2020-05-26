@@ -129,10 +129,3 @@ if __name__ == "__main__":
     print("save time: " + str((t4-t3)))
     print("evaluate time: " + str((t5-t4)))
     print("total time: " + str((t5-t)))
-
-
-
-if __name__ == "__main__":
-    m = Main()
-    m.train('Data')
-    m.save()

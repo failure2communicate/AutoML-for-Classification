@@ -30,7 +30,7 @@ classifier_config_dict = {
         'learning_rate': [1e-3, 1e-2, 1e-1, 0.5, 1.],
         'subsample': np.arange(0.05, 0.95, 0.05),
         'min_child_weight': range(1, 21),
-        'nthread': [1]
+        'nthread': [-1]
     },
 
     # Preprocesssors
