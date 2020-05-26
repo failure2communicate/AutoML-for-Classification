@@ -18,7 +18,7 @@ Example:
 
 
 # Output Description
-Prediction, Confidence Score and Label in pandas DataFramecoverted to a JSON string.
+Prediction, Confidence Score and Label (pandas DataFrame coverted to a JSON string).
 If label encoding was done outside of AI Fabric, the output will not contain the "Label".
 Some scikit-learn models don't support confidence scores. If the output of the optimization pipeline is
 a scikit-learn model which doesn't support confidence scores the output will only contain the "Prediction". 
@@ -35,27 +35,27 @@ TPOT is built on top of scikit-learn, so all of the code it generates should loo
 The model was not built by UiPath but rather was built by the DS community, UiPath makes no guarantees on any performance metrics of the model.
 The model is provided "as is" without warranty of any kind, either express or implied. Use at your own risk.   
      
-    # Training data description (if available)
-    Not applicable
- 
-    # Benchmark (if available)
-    Not applicable
+# Training data description (if available)
+Not applicable
 
-    # Author(s) and Publication (if available)
-    The model is based on a publication entitled "Scaling tree-based automated machine learning to biomedical big data with a feature set selector."
-    from Trang T. Le, Weixuan Fu and Jason H. Moore (2020) and "Evaluation of a Tree-based Pipeline Optimization Tool for Automating Data Science."
-    from Randal S. Olson, Nathan Bartley, Ryan J. Urbanowicz, and Jason H. Moore.
+# Benchmark (if available)
+Not applicable
 
-    The publication can be found here:
-    [https://academic.oup.com/bioinformatics/article/36/1/250/5511404]
-    [http://dl.acm.org/citation.cfm?id=2908918]
+# Author(s) and Publication (if available)
+The model is based on a publication entitled "Scaling tree-based automated machine learning to biomedical big data with a feature set selector."
+from Trang T. Le, Weixuan Fu and Jason H. Moore (2020) and "Evaluation of a Tree-based Pipeline Optimization Tool for Automating Data Science."
+from Randal S. Olson, Nathan Bartley, Ryan J. Urbanowicz, and Jason H. Moore.
 
-    # Implementatoin
-    The model was packaged into a form consumable by AI Fabric.
- 
-    # License
-    GNU Lesser General Public License v3.0
- 
+The publication can be found here:
+[https://academic.oup.com/bioinformatics/article/36/1/250/5511404]
+[http://dl.acm.org/citation.cfm?id=2908918]
+
+# Implementatoin
+The model was packaged into a form consumable by AI Fabric.
+
+# License
+GNU Lesser General Public License v3.0
+
     Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>
     Everyone is permitted to copy and distribute verbatim copies
     of this license document, but changing it is not allowed.
