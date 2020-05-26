@@ -27,6 +27,8 @@ a scikit-learn model which doesn't support confidence scores the output will onl
 Python 3.6
  
 # Description
+Documentation: https://epistasislab.github.io/tpot/
+
 Consider TPOT your Data Science Assistant. TPOT is a Python Automated Machine Learning tool that optimizes machine learning pipelines using genetic programming.
 TPOT will automate the most tedious part of machine learning by intelligently exploring thousands of possible pipelines to find the best one for your data.
 Once TPOT is finished searching (or you get tired of waiting), it provides you with the Python code for the best pipeline it found so you can tinker with the pipeline from there.
@@ -47,8 +49,10 @@ from Trang T. Le, Weixuan Fu and Jason H. Moore (2020) and "Evaluation of a Tree
 from Randal S. Olson, Nathan Bartley, Ryan J. Urbanowicz, and Jason H. Moore.
 
 The publication can be found here:
-[https://academic.oup.com/bioinformatics/article/36/1/250/5511404]
-[http://dl.acm.org/citation.cfm?id=2908918]
+    
+1. https://academic.oup.com/bioinformatics/article/36/1/250/5511404
+
+2. http://dl.acm.org/citation.cfm?id=2908918
 
 # Implementatoin
 The model was packaged into a form consumable by AI Fabric.
