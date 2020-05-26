@@ -1,17 +1,15 @@
 import sys
 sys.path.append('..')
-import time
+
 import os
+import joblib
 import pandas as pd
 import numpy as np
-import joblib
 
-from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
+import autosklearn.classification
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import LabelEncoder
-from tpot import TPOTClassifier
-from training_only import config
 
 class Main(object):
     def __init__(self):
@@ -32,7 +30,7 @@ class Main(object):
             self.label_encoder = joblib.load(os.path.join(self.cur_dir, 'label_encoder.sav'))
         else:
             self.label_encoder = LabelEncoder()
-    
+
     def train(self, training_directory):
         if os.path.isfile(os.path.join(self.cur_dir, training_directory, 'train.csv')):
             data = pd.read_csv(os.path.join(self.cur_dir, training_directory, 'train.csv'), header=0, encoding="utf-8")
@@ -51,23 +49,12 @@ class Main(object):
         nan_imputer = SimpleImputer(missing_values=np.nan, strategy='mean')
         X = nan_imputer.fit_transform(X)
 
-        pipeline_optimizer = TPOTClassifier(max_time_mins = self.train_time, 
-                                            population_size=20,
-                                            cv=5,
-                                            scoring=self.scoring,
-                                            n_jobs=-1,
-                                            memory=artifacts_directory,
-                                            warm_start=True,
-                                            random_state=420,
-                                            verbosity=2,
-                                            config_dict=self.config)
-        pipeline_optimizer.fit(X, y)
-        
-        # export fitted pipeline to artifacts directory
-        pipeline_optimizer.export(os.path.join(artifacts_directory, 'TPOT_pipeline.py'))
-        # create new pipeline which contain nan_imputer
+        automl = autosklearn.classification.AutoSklearnClassifier(time_left_for_this_task=self.train_time)
+        automl.fit(X, y)
+
         pipe = Pipeline([('nan_imputer', nan_imputer),
-                         ('tpot_pipeline', pipeline_optimizer.fitted_pipeline_)])
+                         ('auto_sklearn', automl)])
+                         
         return pipe
 
     def evaluate(self, evaluation_directory):
@@ -142,3 +129,10 @@ if __name__ == "__main__":
     print("save time: " + str((t4-t3)))
     print("evaluate time: " + str((t5-t4)))
     print("total time: " + str((t5-t)))
+
+
+
+if __name__ == "__main__":
+    m = Main()
+    m.train('Data')
+    m.save()
