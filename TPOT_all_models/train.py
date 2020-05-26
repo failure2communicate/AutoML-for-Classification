@@ -2,7 +2,6 @@ import sys
 sys.path.append('..')
 import time
 import os
-import joblib
 import pandas as pd
 import numpy as np
 import json
@@ -17,7 +16,7 @@ from training_only import config
 class Main(object):
     def __init__(self):
         self.cur_dir = os.path.dirname(os.path.realpath(__file__))
-        self.target_column = os.environ.get('target_column', 'click')
+        self.target_column = os.environ.get('target_column', 'target')
         self.feature_columns = None
         self.artifacts_directory = os.environ.get('artifacts_directory', os.path.join(self.cur_dir, 'artifacts'))
         self.train_time = os.environ.get('train_time', 2)
@@ -26,11 +25,9 @@ class Main(object):
         self.label_encoder = None
         self.model = None
                 
-        #  import model
         if os.path.isfile(os.path.join(self.cur_dir, 'model.sav')):
             self.model = joblib.load(os.path.join(self.cur_dir, 'model.sav'))    
 
-        # import label encoder
         if os.path.isfile(os.path.join(self.cur_dir, 'label_encoder.sav')):
             self.label_encoder = joblib.load(os.path.join(self.cur_dir, 'label_encoder.sav'))
         else:
@@ -119,29 +116,29 @@ class Main(object):
         test_df[self.target_column] = y_test
         test_df.to_csv(os.path.join(self.cur_dir, data_directory, 'test', 'evaluate.csv'), index=False)
 
-if __name__ == "__main__":
-    t = time.time()
-    print('####### initialize ########')
-    m = Main()
-    t1 = time.time()
-#    m.input_column = 'email'
-    print('####### process data ########')
-    m.process_data('data')
-    t2 = time.time()
-    print('####### train ########')
-    m.train('data/training')
-    t3 = time.time()
-    print('####### save model ########')
-    m.save()
-    t4 = time.time()
-    print('####### evaluate ########')
-    m.evaluate('data/test')
-    t5 = time.time()
-    print('####### done ########')
+# if __name__ == "__main__":
+#     t = time.time()
+#     print('####### initialize ########')
+#     m = Main()
+#     t1 = time.time()
+# #    m.input_column = 'email'
+#     print('####### process data ########')
+#     m.process_data('data')
+#     t2 = time.time()
+#     print('####### train ########')
+#     m.train('data/training')
+#     t3 = time.time()
+#     print('####### save model ########')
+#     m.save()
+#     t4 = time.time()
+#     print('####### evaluate ########')
+#     m.evaluate('data/test')
+#     t5 = time.time()
+#     print('####### done ########')
 
-    print("initialize time: " + str(t1-t))
-    print("process data time: " + str((t2-t1)))
-    print("train time: " + str((t3-t2)))
-    print("save time: " + str((t4-t3)))
-    print("evaluate time: " + str((t5-t4)))
-    print("total time: " + str((t5-t)))
+#     print("initialize time: " + str(t1-t))
+#     print("process data time: " + str((t2-t1)))
+#     print("train time: " + str((t3-t2)))
+#     print("save time: " + str((t4-t3)))
+#     print("evaluate time: " + str((t5-t4)))
+#     print("total time: " + str((t5-t)))
