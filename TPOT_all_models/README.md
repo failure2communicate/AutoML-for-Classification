@@ -1,6 +1,7 @@
 # Model Name
 TPOT Automated Machine Learning 
- 
+Uses TPOT to cycle trhough various scikit-learn pipelines and chooses the best fitting one.
+
 # Input Type
 .csv
  

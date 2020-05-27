@@ -21,6 +21,7 @@ class Main(object):
         self.artifacts_directory = os.environ.get('artifacts_directory', os.path.join(self.cur_dir, 'artifacts'))
         self.train_time = os.environ.get('train_time', 2)
         self.scoring = os.environ.get('scoring', 'accuracy')
+        self.keep_training = os.environ.get('keep_training', 'False')
         self.config = config.classifier_config_dict
         self.label_encoder = None
         self.model = None
@@ -41,7 +42,7 @@ class Main(object):
         else:
             (X, y) = self.load_data(training_directory)
 
-        if self.model is None:
+        if self.model is None or self.keep_training == 'True':
             self.model = self.build_model(X, y, self.artifacts_directory)
         else:
             self.model.fit(X, y)
@@ -112,29 +113,29 @@ class Main(object):
         test_df[self.target_column] = y_test
         test_df.to_csv(os.path.join(self.cur_dir, data_directory, 'test', 'evaluate.csv'), index=False)
 
-if __name__ == "__main__":
-    t = time.time()
-    print('####### initialize ########')
-    m = Main()
-    t1 = time.time()
-#    m.input_column = 'email'
-    print('####### process data ########')
-    m.process_data('data')
-    t2 = time.time()
-    print('####### train ########')
-    m.train('data/training')
-    t3 = time.time()
-    print('####### save model ########')
-    m.save()
-    t4 = time.time()
-    print('####### evaluate ########')
-    m.evaluate('data/test')
-    t5 = time.time()
-    print('####### done ########')
+# if __name__ == "__main__":
+#     t = time.time()
+#     print('####### initialize ########')
+#     m = Main()
+#     t1 = time.time()
+# #    m.input_column = 'email'
+#     print('####### process data ########')
+#     m.process_data('data')
+#     t2 = time.time()
+#     print('####### train ########')
+#     m.train('data/training')
+#     t3 = time.time()
+#     print('####### save model ########')
+#     m.save()
+#     t4 = time.time()
+#     print('####### evaluate ########')
+#     m.evaluate('data/test')
+#     t5 = time.time()
+#     print('####### done ########')
 
-    print("initialize time: " + str(t1-t))
-    print("process data time: " + str((t2-t1)))
-    print("train time: " + str((t3-t2)))
-    print("save time: " + str((t4-t3)))
-    print("evaluate time: " + str((t5-t4)))
-    print("total time: " + str((t5-t)))
+#     print("initialize time: " + str(t1-t))
+#     print("process data time: " + str((t2-t1)))
+#     print("train time: " + str((t3-t2)))
+#     print("save time: " + str((t4-t3)))
+#     print("evaluate time: " + str((t5-t4)))
+#     print("total time: " + str((t5-t)))
