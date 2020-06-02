@@ -56,3 +56,11 @@ class Main(object):
             return_df = pd.DataFrame.from_dict(data_dict)
             return return_df.to_json(orient = 'records')
 
+if __name__ == '__main__':
+    main = Main()
+    df = pd.read_csv('Benchmark_data\\50k_train.csv', header=0).head(20)
+    df = df.drop('click', axis=1)
+    json_df = df.to_json(orient='records')
+    print(json_df)
+    print(main.predict(json_df))
+

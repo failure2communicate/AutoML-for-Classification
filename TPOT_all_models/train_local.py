@@ -16,7 +16,7 @@ from training_only import config
 class Main(object):
     def __init__(self):
         self.cur_dir = os.path.dirname(os.path.realpath(__file__))
-        self.target_column = os.environ.get('target_column', 'target')
+        self.target_column = os.environ.get('target_column', 'click')
         self.feature_columns = None
         self.artifacts_directory = os.environ.get('artifacts_directory', os.path.join(self.cur_dir, 'artifacts'))
         self.train_time = os.environ.get('train_time', 2)
@@ -25,7 +25,7 @@ class Main(object):
         self.config = config.classifier_config_dict
         self.label_encoder = None
         self.model = None
-
+                
         if os.path.isfile(os.path.join(self.cur_dir, 'model.sav')):
             self.model = joblib.load(os.path.join(self.cur_dir, 'model.sav'))    
 
@@ -33,7 +33,7 @@ class Main(object):
             self.label_encoder = joblib.load(os.path.join(self.cur_dir, 'label_encoder.sav'))
         else:
             self.label_encoder = LabelEncoder()
-
+    
     def train(self, training_directory):
         if os.path.isfile(os.path.join(self.cur_dir, training_directory, 'train.csv')):
             data = pd.read_csv(os.path.join(self.cur_dir, training_directory, 'train.csv'), header=0, encoding="utf-8")
@@ -49,6 +49,8 @@ class Main(object):
 
     def build_model(self, X, y, artifacts_directory):
         # Perform missing value imputation as scikit-learn models can't handle NaN's
+        nan_imputer = SimpleImputer(missing_values=np.nan, strategy='mean')
+        X = nan_imputer.fit_transform(X)
 
         pipeline_optimizer = TPOTClassifier(max_time_mins = self.train_time, 
                                             population_size=20,
@@ -64,8 +66,10 @@ class Main(object):
         
         # export fitted pipeline to artifacts directory
         pipeline_optimizer.export(os.path.join(artifacts_directory, 'TPOT_pipeline.py'))
-
-        return pipeline_optimizer.fitted_pipeline_
+        # create new pipeline which contain nan_imputer
+        pipe = Pipeline([('nan_imputer', nan_imputer),
+                         ('tpot_pipeline', pipeline_optimizer.fitted_pipeline_)])
+        return pipe
 
     def evaluate(self, evaluation_directory):
         if os.path.isfile(os.path.join(self.cur_dir, evaluation_directory, 'evaluate.csv')):
@@ -112,3 +116,30 @@ class Main(object):
         test_df = pd.DataFrame(X_test, columns = self.feature_columns)
         test_df[self.target_column] = y_test
         test_df.to_csv(os.path.join(self.cur_dir, data_directory, 'test', 'evaluate.csv'), index=False)
+
+if __name__ == "__main__":
+    t = time.time()
+    print('####### initialize ########')
+    m = Main()
+    t1 = time.time()
+#    m.input_column = 'email'
+    print('####### process data ########')
+    m.process_data('data')
+    t2 = time.time()
+    print('####### train ########')
+    m.train('data/training')
+    t3 = time.time()
+    print('####### save model ########')
+    m.save()
+    t4 = time.time()
+    print('####### evaluate ########')
+    m.evaluate('data/test')
+    t5 = time.time()
+    print('####### done ########')
+
+    print("initialize time: " + str(t1-t))
+    print("process data time: " + str((t2-t1)))
+    print("train time: " + str((t3-t2)))
+    print("save time: " + str((t4-t3)))
+    print("evaluate time: " + str((t5-t4)))
+    print("total time: " + str((t5-t)))

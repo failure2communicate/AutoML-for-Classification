@@ -116,30 +116,3 @@ class Main(object):
         test_df = pd.DataFrame(X_test, columns = self.feature_columns)
         test_df[self.target_column] = y_test
         test_df.to_csv(os.path.join(self.cur_dir, data_directory, 'test', 'evaluate.csv'), index=False)
-
-# if __name__ == "__main__":
-#     t = time.time()
-#     print('####### initialize ########')
-#     m = Main()
-#     t1 = time.time()
-# #    m.input_column = 'email'
-#     print('####### process data ########')
-#     m.process_data('data')
-#     t2 = time.time()
-#     print('####### train ########')
-#     m.train('data/training')
-#     t3 = time.time()
-#     print('####### save model ########')
-#     m.save()
-#     t4 = time.time()
-#     print('####### evaluate ########')
-#     m.evaluate('data/test')
-#     t5 = time.time()
-#     print('####### done ########')
-
-#     print("initialize time: " + str(t1-t))
-#     print("process data time: " + str((t2-t1)))
-#     print("train time: " + str((t3-t2)))
-#     print("save time: " + str((t4-t3)))
-#     print("evaluate time: " + str((t5-t4)))
-#     print("total time: " + str((t5-t)))
