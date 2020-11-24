@@ -53,7 +53,7 @@ class DataManager():
             label = dataframe_from_csv.loc[:, self.target_column_name] 
             dataframe_from_csv.loc[:, self.target_column_name] = self._label_encoder.fit_transform(label)
 
-            joblib.dump(self._label_encoder, os.path.join(self.config.cur_dir, 'LabelEncoder.sav'))
+            joblib.dump(self._label_encoder, os.path.join(self.config.cur_dir, "model", 'LabelEncoder.sav'))
             self.logger.info(f"Encoded label column ['{self.target_column_name}']")
         
         return dataframe_from_csv
@@ -151,8 +151,8 @@ class DataManager():
         return self.feature_column_names
 
     def load_labelencoder(self):
-        if os.path.isfile(os.path.join(self.config.cur_dir, "LabelEncoder.sav")):
+        if os.path.isfile(os.path.join(self.config.cur_dir, "model", "LabelEncoder.sav")):
             self.logger.info(f"Loading label encoder...")
-            return joblib.load(os.path.join(self.config.cur_dir, "LabelEncoder.sav"))
+            return joblib.load(os.path.join(self.config.cur_dir, "model", "LabelEncoder.sav"))
         else:
             return LabelEncoder()
