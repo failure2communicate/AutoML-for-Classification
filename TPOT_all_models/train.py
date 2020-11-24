@@ -1,118 +1,48 @@
-import sys
-sys.path.append('..')
-import time
 import os
-import pandas as pd
-import numpy as np
-import joblib
+from contextlib import contextmanager
+from time import time
 
-from sklearn.model_selection import train_test_split
-from sklearn.impute import SimpleImputer
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import LabelEncoder
-from tpot import TPOTClassifier
-from training_only import config
+from aiflib.model import Model
 
-class Main(object):
+class Main:
     def __init__(self):
-        self.cur_dir = os.path.dirname(os.path.realpath(__file__))
-        self.target_column = os.environ.get('target_column', 'click')
-        self.feature_columns = None
-        self.artifacts_directory = os.environ.get('artifacts_directory', os.path.join(self.cur_dir, 'artifacts'))
-        self.train_time = os.environ.get('train_time', 2)
-        self.scoring = os.environ.get('scoring', 'accuracy')
-        self.keep_training = os.environ.get('keep_training', 'False')
-        self.config = config.classifier_config_dict
-        self.label_encoder = None
-        self.model = None
-                
-        if os.path.isfile(os.path.join(self.cur_dir, 'model.sav')):
-            self.model = joblib.load(os.path.join(self.cur_dir, 'model.sav'))    
+        self.model = Model()
 
-        if os.path.isfile(os.path.join(self.cur_dir, 'label_encoder.sav')):
-            self.label_encoder = joblib.load(os.path.join(self.cur_dir, 'label_encoder.sav'))
-        else:
-            self.label_encoder = LabelEncoder()
-    
     def train(self, training_directory):
-        if os.path.isfile(os.path.join(self.cur_dir, training_directory, 'train.csv')):
-            data = pd.read_csv(os.path.join(self.cur_dir, training_directory, 'train.csv'), header=0, encoding="utf-8")
-            self.feature_columns = data.drop(self.target_column, axis=1).columns
-            (X, y) = data[self.feature_columns].values, data[self.target_column].values
-        else:
-            (X, y) = self.load_data(training_directory)
-
-        if self.model is None or self.keep_training == 'True':
-            self.model = self.build_model(X, y, self.artifacts_directory)
-        else:
-            self.model.fit(X, y)
-
-    def build_model(self, X, y, artifacts_directory):
-        # Perform missing value imputation as scikit-learn models can't handle NaN's
-        nan_imputer = SimpleImputer(missing_values=np.nan, strategy='mean')
-        X = nan_imputer.fit_transform(X)
-
-        pipeline_optimizer = TPOTClassifier(max_time_mins = self.train_time, 
-                                            population_size=20,
-                                            cv=5,
-                                            scoring=self.scoring,
-                                            n_jobs=-1,
-                                            memory=artifacts_directory,
-                                            warm_start=True,
-                                            random_state=420,
-                                            verbosity=2,
-                                            config_dict=self.config)
-        pipeline_optimizer.fit(X, y)
-        
-        # export fitted pipeline to artifacts directory
-        pipeline_optimizer.export(os.path.join(artifacts_directory, 'TPOT_pipeline.py'))
-        # create new pipeline which contain nan_imputer
-        pipe = Pipeline([('nan_imputer', nan_imputer),
-                         ('tpot_pipeline', pipeline_optimizer.fitted_pipeline_)])
-        return pipe
+        self.model.train(training_directory)
 
     def evaluate(self, evaluation_directory):
-        if os.path.isfile(os.path.join(self.cur_dir, evaluation_directory, 'evaluate.csv')):
-            data = pd.read_csv(os.path.join(self.cur_dir, evaluation_directory, 'evaluate.csv'), header=0, encoding="utf-8")
-            self.feature_columns = data.drop(self.target_column, axis=1).columns
-            (X, y) = data[self.feature_columns].values, data[self.target_column].values
-        else:
-            (X, y) = self.load_data(evaluation_directory)
-        return self.model.score(X, y)
+        return self.model.evaluate(evaluation_directory)
 
     def save(self):
-        joblib.dump(self.model, os.path.join(self.cur_dir, 'model.sav'))
+        pass
 
-    def load_data(self, data_directory):
-        df_list = []
-        for filename in os.listdir(os.path.join(self.cur_dir, data_directory)):
-            if not os.path.isfile(os.path.join(self.cur_dir, data_directory, filename)):
-                continue
-            if filename[-4:] == '.csv':
-                df_list.append(pd.read_csv(os.path.join(self.cur_dir, data_directory, filename), header=0, encoding="utf-8"))                
-            
-        data = pd.concat(df_list, axis=0)
-        self.feature_columns = data.drop(self.target_column, axis=1).columns
+    def process_data(self, directory):
+        self.model.process_data(directory)
 
-        X = data[self.feature_columns].values
-        y = data[self.target_column].values
-        
-        # Perform label encoding if labels haven't been encoded
-        if data[self.target_column].dtype == 'object':
-            y = self.label_encoder.fit_transform(y)
-            joblib.dump(self.label_encoder, os.path.join(self.cur_dir, 'label_encoder.sav'))
-        
-        return X, y
+# if __name__ == "__main__":
 
-    def process_data(self, data_directory):
-        X, y = self.load_data(data_directory)
-
-        # Split into train and evaluation set
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=420, stratify=y)
-        train_df = pd.DataFrame(X_train, columns=self.feature_columns)
-        train_df[self.target_column] = y_train
-        train_df.to_csv(os.path.join(self.cur_dir, data_directory, 'training', 'train.csv'), index=False)
-
-        test_df = pd.DataFrame(X_test, columns = self.feature_columns)
-        test_df[self.target_column] = y_test
-        test_df.to_csv(os.path.join(self.cur_dir, data_directory, 'test', 'evaluate.csv'), index=False)
+#     # os.environ["csv_name"] = "train.csv"
+#     os.environ["target_column"] = "Churn"
+#     os.environ["max_time_mins"] = "2"        
+#     os.environ["warm_start"] = "false"
+ 
+# @contextmanager
+# def timing(description: str) -> None:
+#     print("-"*50)
+#     print("Running :", description)
+#     start = time()
+#     yield
+#     ellapsed_time = time() - start
+#     print(f"{description} time: {ellapsed_time}")
+    
+# with timing("Initialize"):
+#     m = Main()
+# with timing("Process data"):
+#     m.process_data("dataset")
+# with timing("Evaluate"):
+#     m.evaluate("dataset/test")
+# with timing("Train"):
+#     m.train("dataset/training")
+# with timing("Evaluate"):
+#     m.evaluate("dataset/test")
