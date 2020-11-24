@@ -56,8 +56,8 @@ class Model():
             self._model.fit(X, y)
             self.logger.info(f"Finished retraining model.")
             self.logger.info(help_string)
-
-        joblib.dump(self._model, os.path.join(self.config.cur_dir, "Model.sav"))
+            
+        joblib.dump(self._model, os.path.join(self.config.cur_dir, "model", "Model.sav"))
     
 
     def evaluate(self, evaluation_directory):
@@ -193,16 +193,16 @@ class Model():
             return return_df.to_json(orient = 'records')
 
     def load_model(self):
-        if os.path.isfile(os.path.join(self.config.cur_dir, "Model.sav")):
+        if os.path.isfile(os.path.join(self.config.cur_dir, "model", "Model.sav")):
             self.logger.info(f"Loading pre-trained model...")
-            return joblib.load(os.path.join(self.config.cur_dir, "Model.sav"))
+            return joblib.load(os.path.join(self.config.cur_dir, "model", "Model.sav"))
         else:
             return None
 
     def load_labelencoder(self):
-        if os.path.isfile(os.path.join(self.config.cur_dir, "LabelEncoder.sav")):
+        if os.path.isfile(os.path.join(self.config.cur_dir, "model", "LabelEncoder.sav")):
             self.logger.info(f"Loading label encoder...")
-            return joblib.load(os.path.join(self.config.cur_dir, "LabelEncoder.sav"))
+            return joblib.load(os.path.join(self.config.cur_dir, "model", "LabelEncoder.sav"))
         else:
             return None
 
