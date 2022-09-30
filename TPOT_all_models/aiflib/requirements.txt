@@ -1,4 +1,4 @@
-joblib==0.17.0
+joblib==1.2.0
 numpy==1.19.2
 TPOT==0.11.6
 pandas==1.1.3
